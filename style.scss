@@ -18,22 +18,23 @@ html {
 }
 
 body {
-	background: $white;
+  background: $black;
   font: 18px/1.4 $helvetica;
-  color: $darkGray;
+  color: $white;
 }
 
 .container {
   margin: 0 auto;
-  max-width: 740px;
+  //max-width: 1080px;
   padding: 0 10px;
-  width: 100%;
+  width: 97%;
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: $helveticaNeue;
-  color: $darkerGray;
-  font-weight: bold;
+  font-family: $patrick; // $helveticaNeue;
+
+  color: $white;
+  //font-weight: bold;
 
   line-height: 1.7;
   margin: 1em 0 15px;
@@ -66,14 +67,16 @@ h4 {
 
 p {
   margin: 15px 0;
+  font-family: $chathura;
+  font-size: 1.9em;
 }
 
 a {
-  color: $blue;
+  color: $whitesmoke;
   text-decoration: none;
 	cursor: pointer;
   &:hover, &:active {
-    color: $blue;
+    color: $white;
   }
 }
 
@@ -192,9 +195,10 @@ img {
 
 .site-name {
   margin: 0;
-  color: $darkGray;
+  color: $whitesmoke;
   cursor: pointer;
-  font-family: $helveticaNeue;
+  //font-family: $helveticaNeue;
+  font-family: $fredericka;
   font-weight: 300;
   font-size: 28px;
   letter-spacing: 1px;
@@ -203,6 +207,7 @@ img {
 .site-description {
   margin: -5px 0 0 0;
   color: $gray;
+  font-family: $patrick;
   font-size: 16px;
 
   @include mobile {
@@ -213,7 +218,8 @@ img {
 nav {
   float: right;
   margin-top: 23px; // @TODO: Vertically middle align
-  font-family: $helveticaNeue;
+  //font-family: $helveticaNeue;
+  font-family: $fredericka;
   font-size: 18px;
 
   @include mobile {
@@ -225,14 +231,14 @@ nav {
 
   a {
     margin-left: 20px;
-    color: $darkGray;
+    color: $whitesmoke;
     text-align: right;
     font-weight: 300;
     letter-spacing: 1px;
 
     @include mobile {
       margin: 0 10px;
-      color: $blue;
+      color: $white;
     }
   }
 }

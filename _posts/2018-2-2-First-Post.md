@@ -1,3 +1,8 @@
+---
+layout: post
+title: Hello!
+---
+
 ## Hello
 
 # This is just a test post.
