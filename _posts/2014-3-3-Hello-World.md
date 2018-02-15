@@ -3,7 +3,7 @@ layout: post
 title: You're up and running!
 ---
 
-<a href="{{ site.baseurl }}/images/config.png" class="fresco" data-fresco-group="home_page">![_config.yml]({{ site.baseurl }}/images/config.png)</a>Test summary. This is me, mohsen, and this is just a test, i repeat, this is just a test.
+<a href="{{ site.baseurl }}/images/config.png" class="chocolat-image">![_config.yml]({{ site.baseurl }}/images/config.png)</a>Test summary. This is me, mohsen, and this is just a test, i repeat, this is just a test.
 
 Next you can update your site name, avatar and other options using the _config.yml file in the root of your repository (shown below).
 

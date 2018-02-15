@@ -14,7 +14,7 @@
 
     <!-- Created with Jekyll Now - http://github.com/barryclark/jekyll-now -->
 
-    <link rel="stylesheet" type="text/css" href="{{ site.baseurl }}/assets/css/fresco/fresco.css" />
+    <link rel="stylesheet" type="text/css" href="{{ site.baseurl }}/assets/css/chocolat.css" />
 
     <link href="https://fonts.googleapis.com/css?family=Amatic+SC|Chathura|Fredericka+the+Great|Patrick+Hand+SC" rel="stylesheet">
   </head>
@@ -50,8 +50,19 @@
       </div>
     </div> -->
 
-    <script type="text/javascript" src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
-    <script type="text/javascript" src="{{ site.baseurl }}/assets/js/fresco.js"></script>
+    <script type="text/javascript" src="{{ site.baseurl }}/assets/js/jquery-1.11.3.min.js"></script>
+    <script type="text/javascript" src="{{ site.baseurl }}/assets/js/jquery.chocolat.js"></script>
+    <script type="text/javascript">
+      $(document).ready(function(){
+          $('.chocolat-parent').Chocolat();
+
+          $('.post_page a.chocolat-image').click(function(evt) { 
+            evt.preventDefault(); 
+            evt.stopPropagation();
+            return false; 
+          });
+      });
+    </script>
 
     {% include analytics.html %}
   </body>

@@ -23,6 +23,10 @@ body {
   color: $white;
 }
 
+::-webkit-scrollbar { 
+    display: none; 
+}
+
 .container {
   margin: 0 auto;
   //max-width: 1080px;
@@ -114,6 +118,11 @@ img {
   max-height: 100%;
   margin: 0 auto;
   display: block;
+}
+
+.post_page a.chocolat-image {
+  pointer-events: none;
+  cursor: default;
 }
 
 // Fixes images in popup boxes from Google Translate
