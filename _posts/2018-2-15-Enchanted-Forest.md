@@ -3,7 +3,7 @@ layout: post
 title: You're up and running!
 ---
 
-![_config.yml]({{ site.baseurl }}/images/config.png)Test summary. This is me, mohsen, and this is just a test, i repeat, this is just a test.
+<a onclick="openModal();currentSlide(1)" class="hover-shadow">![Some Foggy Morning...]({{ site.baseurl }}/images/DSC_0883.jpg)</a>This was a delightful morning.
 
 Next you can update your site name, avatar and other options using the _config.yml file in the root of your repository (shown below).
 
