@@ -1,0 +1,12 @@
+<link rel="stylesheet" type="text/css" href="{{ site.baseurl }}/assets/css/chocolat.css" />
+<script type="text/javascript" src="{{ site.baseurl }}/assets/js/jquery.chocolat.js"></script>
+
+<script type="text/javascript">
+  $(document).ready(function(){
+  	{% if page.excerpt %}
+  	  $('.post_page').Chocolat();
+	{% else %}
+      $('.chocolat-parent').Chocolat();
+    {% endif %}
+  });
+</script>
