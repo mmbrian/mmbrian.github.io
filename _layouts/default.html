@@ -14,7 +14,8 @@
 
     <!-- Created with Jekyll Now - http://github.com/barryclark/jekyll-now -->
 
-    <link rel="stylesheet" type="text/css" href="{{ site.baseurl }}/assets/css/lightbox.css" />
+    <link rel="stylesheet" type="text/css" href="{{ site.baseurl }}/assets/css/fresco/fresco.css" />
+
 
     <link href="https://fonts.googleapis.com/css?family=Amatic+SC|Chathura|Fredericka+the+Great|Patrick+Hand+SC" rel="stylesheet">
   </head>
@@ -50,23 +51,8 @@
       </div>
     </div> -->
 
-    <!-- The Modal/Lightbox -->
-    <div id="myModal" class="modal">
-      <span class="close cursor" onclick="closeModal()">&times;</span>
-      <div class="modal-content">
-
-        {% for post in site.posts %}
-          <div class="mySlides">
-            {{ post.excerpt | remove: '<p>' | remove: '</p>' | markdownify}}
-          </div>
-        {% endfor %}
-
-        <!-- Next/previous controls -->
-        <!-- <a class="prev" onclick="plusSlides(-1)">&#10094;</a>
-        <a class="next" onclick="plusSlides(1)">&#10095;</a> -->
-      </div>
-    </div>
-    {% include lightbox.html %}
+    <script type="text/javascript" src="http://code.jquery.com/jquery-3.1.1.min.js"></script>
+    <script type="text/javascript" src="{{ site.baseurl }}/assets/js/fresco.js"></script>
 
     {% include analytics.html %}
   </body>
