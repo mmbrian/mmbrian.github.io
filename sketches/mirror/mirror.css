@@ -20,7 +20,7 @@ svg, div.sketch {
 }
 
 div.sketch {
-  background: red;
+  background: white;
   width: 100vw;
   height: 100vh;
   z-index: 0;
