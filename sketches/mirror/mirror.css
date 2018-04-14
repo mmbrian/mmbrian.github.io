@@ -1,0 +1,58 @@
+
+html {
+  margin:0;
+  padding:0;
+  overflow-y: hidden;
+  overflow-x: hidden;
+}
+body {
+  display: block;
+  width: 100vw;
+  height: 100vh;
+  margin:0;
+  padding:0;
+}
+
+svg, div.sketch {
+  position: fixed;
+  top: 0;
+  left: 0;
+}
+
+div.sketch {
+  background: red;
+  width: 100vw;
+  height: 100vh;
+  z-index: 0;
+}
+
+svg {
+  z-index: 1;
+}
+
+.links {
+  stroke: none;
+  /* stroke: #000; */
+  stroke-opacity: 0.2;
+}
+
+.polygons {
+  fill: none;
+  stroke-width: 1px;
+  stroke: rgba(0, 0, 0, 0.5);
+}
+
+.polygons :first-child {
+  fill: rgba(255, 255, 255, 0.25);
+}
+
+.polygons :last-child {
+  fill: rgba(0, 0, 0, 0.25);
+}
+
+.sites {
+  fill: none;
+}
+
+.sites :first-child {
+}
