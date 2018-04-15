@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Voronoi Diagram with Force Directed Nodes and Delaunay Links</title>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+    <script src="http://d3js.org/d3.v3.min.js"></script>
+    <style type="text/css">
+        html {
+          margin:0;
+          padding:0;
+          overflow-y: hidden;
+          overflow-x: hidden;
+        }
+        body {
+          display: block;
+          width: 100vw;
+          height: 100vh;
+          margin:0;
+          padding:0;
+        }
+
+        circle {
+            stroke: #EFEDF5;
+            fill: #EFEDF5;
+            pointer-events: none;
+        }
+        line {
+            pointer-events: none;
+            stroke: #EFEDF5;
+            stroke-width: 2px;
+            opacity: .05;
+        }
+        path{
+            stroke: #EFEDF5;
+            stroke-width: 4px;
+        }
+
+        .move_path {
+          /* stroke: white; */
+          /* fill: red; */
+        }
+    </style>
+</head>
+<body>
+<div id="chart">
+</div>
+<script type="text/javascript">
+    var w = window.innerWidth,
+        h = window.innerHeight,
+        links = [],
+        simulate = true;
+
+    var numVertices = 125;
+    var vertices = d3.range(numVertices).map(function(i) {
+        return {x: w*Math.random(), y: h*Math.random()};
+    });
+    var d3_geom_voronoi = d3.geom.voronoi().x(function(d) { return d.x; }).y(function(d) { return d.y; })
+    var prevEventScale = 1;
+    var zoom = d3.behavior.zoom().on("zoom", function(d,i) {
+        force.nodes(vertices).start();
+    });
+
+    d3.select(window)
+      .on("keydown", function() {
+        // shift
+        if(d3.event.keyCode == 16) {
+          zoomToAdd = false
+        }
+
+        // s
+        if(d3.event.keyCode == 83) {
+          simulate = !simulate
+          if(simulate) {
+            force.start()
+          } else {
+            force.stop()
+          }
+        }
+      })
+      .on("keyup", function() {
+        zoomToAdd = true
+      })
+
+    var svg = d3.select("#chart")
+            .append("svg")
+            .attr("width", w)
+            .attr("height", h)
+            .call(zoom)
+
+      function vertex_to_site(v) {
+        return [v.x, v.y];
+      }
+      var circle = svg.append("circle")
+          .attr("r", 13)
+          .attr('stroke', 'black')
+          .attr('fill', 'red')
+          .attr("transform", "translate(" + vertex_to_site(vertices[0]) + ")");
+      var _spline = d3.svg.line()
+          .interpolate('basis');
+      var _spline_path = svg
+          .append('g')
+          .append("path")
+          .attr("class", "move_path")
+          .attr('stroke', 'red')
+          .attr('fill', 'blue')
+          .attr("d", _spline(vertices.map((v) => {return vertex_to_site(v);})));
+
+      function transition() {
+        _spline_path.attr("d", _spline(vertices.map((v) => {return vertex_to_site(v);})));
+        circle.transition()
+            .duration(180*1000)
+            // .ease(d3.easeCubicInOut)
+            // .ease(d3.easeSinInOut)
+            // .ease(d3.easeBounceInOut)
+            // .ease(d3.easeElasticInOut)
+            // .ease(d3.easeBackInOut)
+            .attrTween("transform", translateAlong(_spline_path.node()));
+      }
+      // Returns an attrTween for translating along the specified path element.
+      // Notice how the transition is slow for the first quarter of the aniimation
+      // is fast for the second and third quarters and is slow again in the final quarter
+      // This is normal behavior for d3.transition()
+      function translateAlong(__path) {
+        var l = __path.getTotalLength() * 2;
+        return function(d, i, a) {
+          return function(t) {
+            if(t* l >= l/2){
+                var p = __path.getPointAtLength(l - (t*l))
+            } else {
+                var p = __path.getPointAtLength(t * l);
+            }
+            // vertices[0].x += 1;
+            // vertices[0].y += 1;
+            // force.tick();
+            return "translate(" + p.x + "," + p.y + ")";
+          };
+        };
+      }
+
+    var force = d3.layout.force()
+            .charge(-300) // TODO: change by music!
+            .size([w, h])
+            .on("tick", update);
+
+    force.nodes(vertices).start();
+
+    var circle = svg.selectAll("circle");
+    var path = svg.selectAll("path");
+    var link = svg.selectAll("line");
+
+    function update(e) {
+        path = path.data(d3_geom_voronoi(vertices))
+        path.enter().append("path")
+            // drag node by dragging cell
+            .call(d3.behavior.drag()
+              .on("drag", function(d, i) {
+                  vertices[i] = {x: vertices[i].x + d3.event.dx, y: vertices[i].y + d3.event.dy}
+              })
+            )
+            .style("fill", function(d, i) { return 'black' })
+        path.attr("d", function(d) { return "M" + d.join("L") + "Z"; })
+            .transition().duration(150).style("fill", 'rgba(0, 0, 0, 1)')
+        path.exit().remove();
+
+        circle = circle.data(vertices)
+        circle.enter().append("circle")
+              .attr("r", 0)
+              .transition().duration(1000).attr("r", 5);
+        circle.attr("cx", function(d) { return d.x; })
+              .attr("cy", function(d) { return d.y; });
+        circle.exit().transition().attr("r", 0).remove();
+
+        link = link.data(d3_geom_voronoi.links(vertices))
+        link.enter().append("line")
+        link.attr("x1", function(d) { return d.source.x; })
+            .attr("y1", function(d) { return d.source.y; })
+            .attr("x2", function(d) { return d.target.x; })
+            .attr("y2", function(d) { return d.target.y; })
+
+        link.exit().remove()
+
+        if(!simulate) force.stop()
+    }
+</script>
+</body>
+</html>

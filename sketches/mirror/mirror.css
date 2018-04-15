@@ -31,9 +31,13 @@ svg {
 }
 
 .links {
-  stroke: none;
-  /* stroke: #000; */
-  stroke-opacity: 0.2;
+  /* stroke: none; */
+  stroke: rgba(255,255,255,1);
+  stroke-opacity: 0.25;
+}
+
+line.active_cell {
+  stroke: #000;
 }
 
 .polygons {

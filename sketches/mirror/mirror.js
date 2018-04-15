@@ -38,13 +38,51 @@ var svg = d3.select("svg"),//.on("touchmove mousemove", moved),
 var n_sites = 75;
 var sites = d3.range(n_sites)
     .map(function(d) { return [Math.random() * width, Math.random() * height]; });
+var org_sites = JSON.parse(JSON.stringify(sites));
+var diagram;
 
 reset = () => {
   sites = d3.range(n_sites)
       .map(function(d) { return [Math.random() * width, Math.random() * height]; });
+  org_sites = JSON.parse(JSON.stringify(sites));
   _spline_path.attr('d', _spline(sites));
   voronoi = d3.voronoi()
       .extent([[-1, -1], [width + 1, height + 1]])
+}
+
+findOneRing = (site_index) => {
+    if (typeof diagram === 'undefined') return [];
+    if (typeof diagram.cells[site_index] === 'undefined') return [];
+    let ret = [];
+    diagram.cells[site_index].halfedges.forEach((ei) => {
+      if (typeof diagram.edges[ei].left !== 'undefined' && diagram.edges[ei].left.index !== site_index) {
+        // add left site to one ring
+        ret.push(diagram.edges[ei].left.index);
+      } else if (typeof diagram.edges[ei].right !== 'undefined') {
+        // add right site to one ring
+        ret.push(diagram.edges[ei].right.index);
+      }
+    });
+    return ret;
+}
+
+attractNeighbours = (site_index) => {
+  let inds = findOneRing(site_index);
+  inds.forEach((si) => {
+    let dx = sites[site_index][0] - sites[si][0],
+        dy = sites[site_index][1] - sites[si][1];
+    sites[si][0] += dx/150;
+    sites[si][1] += dy/150;
+  });
+}
+
+attractSitesToTheirOrigin = () => {
+  for (let i=1; i<n_sites-1; i++) {
+    let dx = org_sites[i][0] - sites[i][0],
+        dy = org_sites[i][1] - sites[i][1];
+    sites[i][0] += dx/250;
+    sites[i][1] += dy/250;
+  }
 }
 
 
@@ -66,8 +104,8 @@ function transition() {
   circle.transition()
       .duration(180*1000)
       // .ease(d3.easeCubicInOut)
-      // .ease(d3.easeSinInOut)
-      .ease(d3.easeBounceInOut)
+      .ease(d3.easeSinInOut)
+      // .ease(d3.easeBounceInOut)
       // .ease(d3.easeElasticInOut)
       // .ease(d3.easeBackInOut)
       .attrTween("transform", translateAlong(_spline_path.node()))
@@ -87,8 +125,11 @@ function translateAlong(path) {
       } else {
           var p = path.getPointAtLength(t * l);
       }
+      attractNeighbours(0);
+      attractNeighbours(n_sites-1);
       sites[0] = [p.x, p.y];
       sites[n_sites-1] = [width-p.x, height-p.y];
+      attractSitesToTheirOrigin();
       redraw();
       return "translate(" + p.x + "," + p.y + ")";
     };
@@ -126,7 +167,7 @@ function moved() {
 }
 
 function redraw() {
-  var diagram = voronoi(sites);
+  diagram = voronoi(sites);
   polygon = polygon.data(diagram.polygons()).call(redrawPolygon);
   link = link.data(diagram.links()), link.exit().remove();
   link = link.enter().append("line").merge(link).call(redrawLink);
@@ -144,12 +185,28 @@ function redrawLink(link) {
       .attr("y1", function(d) { return d.source[1]; })
       .attr("x2", function(d) { return d.target[0]; })
       .attr("y2", function(d) { return d.target[1]; });
+      // .attr('class', function(d) { return isLinkActive(d) ? 'active_cell' : ''; });
 }
 
 function redrawSite(site) {
   site
       .attr("cx", function(d) { return d[0]; })
       .attr("cy", function(d) { return d[1]; });
+}
+
+var EPSILON = 1e-1;
+function isLinkActive(d) {
+  if (Math.abs(d.source[0] - sites[0][0])<EPSILON) {
+    if (Math.abs(d.source[1] - sites[0][1])<EPSILON) {
+      return true;
+    }
+  }
+  if (Math.abs(d.target[0] - sites[n_sites-1][0])<EPSILON) {
+    if (Math.abs(d.target[1] - sites[n_sites-1][1])<EPSILON) {
+      return true;
+    }
+  }
+  return false;
 }
 
 transition();
