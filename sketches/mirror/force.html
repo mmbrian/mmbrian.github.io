@@ -52,7 +52,7 @@
 
     var numVertices = 125;
     var vertices = d3.range(numVertices).map(function(i) {
-        return {x: w*Math.random(), y: h*Math.random()};
+        return {x: w, y: h};
     });
     var d3_geom_voronoi = d3.geom.voronoi().x(function(d) { return d.x; }).y(function(d) { return d.y; })
     var prevEventScale = 1;
@@ -138,7 +138,7 @@
       }
 
     var force = d3.layout.force()
-            .charge(-300) // TODO: change by music!
+            .charge(-3000) // TODO: change by music!
             .size([w, h])
             .on("tick", update);
 

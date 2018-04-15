@@ -41,11 +41,19 @@ var sites = d3.range(n_sites)
 var org_sites = JSON.parse(JSON.stringify(sites));
 var diagram;
 
+var sx = Math.random()*width;
+var sy = Math.random()*height;
+var move_sites = d3.range(n_sites)
+    .map(function(d) {
+      let p = [sx + d3.randomNormal(0, width/4.)(), sy + d3.randomNormal(0, height/4.)()];
+      return p;
+    });
+
 reset = () => {
   sites = d3.range(n_sites)
       .map(function(d) { return [Math.random() * width, Math.random() * height]; });
   org_sites = JSON.parse(JSON.stringify(sites));
-  _spline_path.attr('d', _spline(sites));
+  _spline_path.attr('d', _spline(move_sites));
   voronoi = d3.voronoi()
       .extent([[-1, -1], [width + 1, height + 1]])
 }
@@ -98,14 +106,14 @@ var _spline_path = svg.append("path")
     .attr("class", "line")
     .attr('stroke', 'none')
     .attr('fill', 'none')
-    .attr("d", _spline(sites));
+    .attr("d", _spline(move_sites));
 
 function transition() {
   circle.transition()
       .duration(180*1000)
       // .ease(d3.easeCubicInOut)
-      .ease(d3.easeSinInOut)
-      // .ease(d3.easeBounceInOut)
+      // .ease(d3.easeSinInOut)
+      .ease(d3.easeLinear)
       // .ease(d3.easeElasticInOut)
       // .ease(d3.easeBackInOut)
       .attrTween("transform", translateAlong(_spline_path.node()))
@@ -117,14 +125,15 @@ function transition() {
 // is fast for the second and third quarters and is slow again in the final quarter
 // This is normal behavior for d3.transition()
 function translateAlong(path) {
-  var l = path.getTotalLength() * 2;
+  var l = path.getTotalLength();
   return function(d, i, a) {
     return function(t) {
-      if(t* l >= l/2){
-          var p = path.getPointAtLength(l - (t*l))
-      } else {
-          var p = path.getPointAtLength(t * l);
-      }
+      let dx = Math.abs(sites[0][0] - sites[n_sites-1][0]);
+      let dy = Math.abs(sites[0][1] - sites[n_sites-1][1]);
+      let d = dx**2 + dy**2;
+      let _t = d3.randomNormal(t*l, 1/d)();
+      var p = path.getPointAtLength(_t)
+
       attractNeighbours(0);
       attractNeighbours(n_sites-1);
       sites[0] = [p.x, p.y];

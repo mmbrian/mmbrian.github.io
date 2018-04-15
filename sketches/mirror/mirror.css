@@ -55,7 +55,19 @@ line.active_cell {
 }
 
 .sites {
-  fill: none;
+  fill: rgba(255, 255, 255, 0.25) !important;
+}
+
+.sites :first-child {
+  fill: rgba(0, 0, 0, 0.5);
+}
+
+.sites :last-child {
+  fill: rgba(255, 255, 255, 1) !important;
+}
+
+.sites {
+  fill: white;
 }
 
 .sites :first-child {
