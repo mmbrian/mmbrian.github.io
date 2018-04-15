@@ -130,8 +130,9 @@ function translateAlong(path) {
     return function(t) {
       let dx = Math.abs(sites[0][0] - sites[n_sites-1][0]);
       let dy = Math.abs(sites[0][1] - sites[n_sites-1][1]);
-      let d = dx**2 + dy**2;
-      let _t = d3.randomNormal(t*l, 1/d)();
+      let d2 = dx**2 + dy**2;
+      let sigma = 1e-6;d2/(width*height);
+      let _t = d3.randomNormal(t*l, sigma)();
       var p = path.getPointAtLength(_t)
 
       attractNeighbours(0);
@@ -178,7 +179,9 @@ function moved() {
 function redraw() {
   diagram = voronoi(sites);
   polygon = polygon.data(diagram.polygons()).call(redrawPolygon);
-  link = link.data(diagram.links()), link.exit().remove();
+  link = link.data(diagram.links());
+  link.exit()
+  .remove();
   link = link.enter().append("line").merge(link).call(redrawLink);
   site = site.data(sites).call(redrawSite);
 }
