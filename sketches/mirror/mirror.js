@@ -36,10 +36,14 @@ var svg = d3.select("svg"),//.on("touchmove mousemove", moved),
     height = +svg.attr("height");
 
 var n_sites = 75;
+var last_diff = d3.range(n_sites).map(function(d) { return 0; });
+var attracting_ngh = d3.range(n_sites).map(function(d) { return 0; });
+var attractionTime = d3.range(n_sites).map(function(d) { return 0; });
 var sites = d3.range(n_sites)
     .map(function(d) { return [Math.random() * width, Math.random() * height]; });
 var org_sites = JSON.parse(JSON.stringify(sites));
 var diagram;
+var polygons;
 
 var sx = Math.random()*width;
 var sy = Math.random()*height;
@@ -81,15 +85,47 @@ attractNeighbours = (site_index) => {
         dy = sites[site_index][1] - sites[si][1];
     sites[si][0] += dx/150;
     sites[si][1] += dy/150;
+    attracting_ngh[si] = site_index;
+    attractionTime[si] += 1;
   });
+  // TODO: attract longer range neighbours up to 3-ring with varying force
 }
 
 attractSitesToTheirOrigin = () => {
   for (let i=1; i<n_sites-1; i++) {
     let dx = org_sites[i][0] - sites[i][0],
         dy = org_sites[i][1] - sites[i][1];
-    sites[i][0] += dx/250;
-    sites[i][1] += dy/250;
+    let d = Math.sqrt(dx**2+dy**2);
+    let xjump = dx/250,
+        yjump = dy/250;
+    let diff = last_diff[i]-d;
+    // TODO: make alpha f(d, attractionTime[i])
+    if (Math.abs(diff)>0.1) {
+      if (diff > 0) {
+        // moving back (site index i)
+        polygon.data(polygons)
+               .filter((p, pi) => {return pi===i;})
+               .call((p) => {
+                 p.attr('fill', (attracting_ngh[i]===0 ? 'rgba(255, 255, 255, ' : 'rgba(0, 0, 0, ') +
+                  Math.max(Math.min(attractionTime[i]/100, 0.25), 0.07) + ')');
+        });
+      } else {
+        // attracting
+        polygon.data(polygons)
+               .filter((p, pi) => {return pi===i;})
+               .call((p) => {
+                 p.attr('fill', (attracting_ngh[i]===0 ? 'rgba(255, 255, 255, ' : 'rgba(0, 0, 0, ') +
+                  Math.max(Math.min(attractionTime[i]/100, 0.25), 0.07) + ')');
+        });
+      }
+    } else {
+
+    }
+
+    sites[i][0] += xjump;
+    sites[i][1] += yjump;
+    last_diff[i] = d;
+    attractionTime[i] = Math.max(0, attractionTime[i]-1);
   }
 }
 
@@ -139,8 +175,9 @@ function translateAlong(path) {
       attractNeighbours(n_sites-1);
       sites[0] = [p.x, p.y];
       sites[n_sites-1] = [width-p.x, height-p.y];
-      attractSitesToTheirOrigin();
+
       redraw();
+      attractSitesToTheirOrigin();
       return "translate(" + p.x + "," + p.y + ")";
     };
   };
@@ -149,10 +186,11 @@ function translateAlong(path) {
 var voronoi = d3.voronoi()
     .extent([[-1, -1], [width + 1, height + 1]]);
 
+polygons = voronoi.polygons(sites);
 var polygon = svg.append("g")
     .attr("class", "polygons")
   .selectAll("path")
-  .data(voronoi.polygons(sites))
+  .data(polygons)
   .enter().append("path")
     .call(redrawPolygon);
 
@@ -177,8 +215,10 @@ function moved() {
 }
 
 function redraw() {
+
   diagram = voronoi(sites);
-  polygon = polygon.data(diagram.polygons()).call(redrawPolygon);
+  polygons = diagram.polygons();
+  polygon = polygon.data(polygons).call(redrawPolygon);
   link = link.data(diagram.links());
   link.exit()
   .remove();
@@ -188,7 +228,8 @@ function redraw() {
 
 function redrawPolygon(polygon) {
   polygon
-      .attr("d", function(d) { return d ? "M" + d.join("L") + "Z" : null; });
+      .attr("d", function(d) { return d ? "M" + d.join("L") + "Z" : null; })
+      .attr('fill', 'rgba(0, 0, 0, 0.07)');
 }
 
 function redrawLink(link) {

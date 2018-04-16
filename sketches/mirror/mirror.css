@@ -41,7 +41,7 @@ line.active_cell {
 }
 
 .polygons {
-  fill: none;
+  /* fill: rgba(0, 0, 0, 1); */
   stroke-width: 1px;
   stroke: rgba(0, 0, 0, 0.5);
 }
