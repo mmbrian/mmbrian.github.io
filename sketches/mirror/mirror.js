@@ -45,11 +45,11 @@ var org_sites = JSON.parse(JSON.stringify(sites));
 var diagram;
 var polygons;
 
-var sx = Math.random()*width;
-var sy = Math.random()*height;
+var sx = width/4 + Math.random()*width/2;
+var sy = height/4 + Math.random()*height/2;
 var move_sites = d3.range(n_sites)
     .map(function(d) {
-      let p = [sx + d3.randomNormal(0, width/4.)(), sy + d3.randomNormal(0, height/4.)()];
+      let p = [sx + d3.randomNormal(0, width/3.)(), sy + d3.randomNormal(0, height/3.)()];
       return p;
     });
 
@@ -107,7 +107,7 @@ attractSitesToTheirOrigin = () => {
                .filter((p, pi) => {return pi===i;})
                .call((p) => {
                  p.attr('fill', (attracting_ngh[i]===0 ? 'rgba(255, 255, 255, ' : 'rgba(0, 0, 0, ') +
-                  Math.max(Math.min(attractionTime[i]/100, 0.25), 0.07) + ')');
+                  Math.max(Math.min(attractionTime[i]/5, 0.25), 0.07) + ')');
         });
       } else {
         // attracting
@@ -115,7 +115,7 @@ attractSitesToTheirOrigin = () => {
                .filter((p, pi) => {return pi===i;})
                .call((p) => {
                  p.attr('fill', (attracting_ngh[i]===0 ? 'rgba(255, 255, 255, ' : 'rgba(0, 0, 0, ') +
-                  Math.max(Math.min(attractionTime[i]/100, 0.25), 0.07) + ')');
+                  Math.max(Math.min(attractionTime[i]/5, 0.25), 0.07) + ')');
         });
       }
     } else {
