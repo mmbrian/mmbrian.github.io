@@ -43,7 +43,7 @@ line.active_cell {
 .polygons {
   /* fill: rgba(0, 0, 0, 1); */
   stroke-width: 1px;
-  stroke: rgba(0, 0, 0, 0.5);
+  stroke: rgba(255, 255, 255, 0.45);
 }
 
 .polygons :first-child {
@@ -51,7 +51,7 @@ line.active_cell {
 }
 
 .polygons :last-child {
-  fill: rgba(0, 0, 0, 0.25);
+  fill: rgba(100, 100, 100, 0.25);
 }
 
 .sites {

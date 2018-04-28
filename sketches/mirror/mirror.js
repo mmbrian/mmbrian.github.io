@@ -44,19 +44,35 @@ var sites = d3.range(n_sites)
 var org_sites = JSON.parse(JSON.stringify(sites));
 var diagram;
 var polygons;
-
-var sx = width/4 + Math.random()*width/2;
-var sy = height/4 + Math.random()*height/2;
+var max_attachment_time = 1;
+var sx = width/2.;
+var sy = height/2.;
 var move_sites = d3.range(n_sites)
     .map(function(d) {
       let p = [sx + d3.randomNormal(0, width/3.)(), sy + d3.randomNormal(0, height/3.)()];
       return p;
     });
 
+var _spline = d3.line()
+    .curve(d3.curveCardinalClosed);
+var _spline_path = svg.append("path")
+    .data(move_sites)
+    .attr("class", "line")
+    .attr('stroke', 'none')
+    .attr('fill', 'none')
+    .attr("d", _spline(move_sites));
+
 reset = () => {
   sites = d3.range(n_sites)
       .map(function(d) { return [Math.random() * width, Math.random() * height]; });
   org_sites = JSON.parse(JSON.stringify(sites));
+  var sx = width/2.;
+  var sy = height/2.;
+  move_sites = d3.range(n_sites)
+      .map(function(d) {
+        let p = [sx + d3.randomNormal(0, width/4.)(), sy + d3.randomNormal(0, height/4.)()];
+        return p;
+      });
   _spline_path.attr('d', _spline(move_sites));
   voronoi = d3.voronoi()
       .extent([[-1, -1], [width + 1, height + 1]])
@@ -87,6 +103,7 @@ attractNeighbours = (site_index) => {
     sites[si][1] += dy/150;
     attracting_ngh[si] = site_index;
     attractionTime[si] += 1;
+    max_attachment_time = Math.max(max_attachment_time, attractionTime[si]);
   });
   // TODO: attract longer range neighbours up to 3-ring with varying force
 }
@@ -106,16 +123,16 @@ attractSitesToTheirOrigin = () => {
         polygon.data(polygons)
                .filter((p, pi) => {return pi===i;})
                .call((p) => {
-                 p.attr('fill', (attracting_ngh[i]===0 ? 'rgba(255, 255, 255, ' : 'rgba(0, 0, 0, ') +
-                  Math.max(Math.min(attractionTime[i]/5, 0.25), 0.07) + ')');
+                 // p.attr('fill', (attracting_ngh[i]===0 ? 'rgba(255, 255, 255, ' : 'rgba(100, 100, 100, ') +
+                 //  Math.max(Math.min(attractionTime[i]/max_attachment_time, 0.25), 0.13) + ')');
         });
       } else {
         // attracting
         polygon.data(polygons)
                .filter((p, pi) => {return pi===i;})
                .call((p) => {
-                 p.attr('fill', (attracting_ngh[i]===0 ? 'rgba(255, 255, 255, ' : 'rgba(0, 0, 0, ') +
-                  Math.max(Math.min(attractionTime[i]/5, 0.25), 0.07) + ')');
+                 // p.attr('fill', (attracting_ngh[i]===0 ? 'rgba(255, 255, 255, ' : 'rgba(100, 100, 100, ') +
+                 //  Math.max(Math.min(attractionTime[i]/max_attachment_time, 0.25), 0.13) + ')');
         });
       }
     } else {
@@ -135,14 +152,6 @@ var circle = svg.append("circle")
     .attr('stroke', 'none')
     .attr('fill', 'none')
     .attr("transform", "translate(" + sites[0] + ")");
-var _spline = d3.line()
-    .curve(d3.curveCardinalClosed);
-var _spline_path = svg.append("path")
-    .data(sites)
-    .attr("class", "line")
-    .attr('stroke', 'none')
-    .attr('fill', 'none')
-    .attr("d", _spline(move_sites));
 
 function transition() {
   circle.transition()
@@ -229,7 +238,7 @@ function redraw() {
 function redrawPolygon(polygon) {
   polygon
       .attr("d", function(d) { return d ? "M" + d.join("L") + "Z" : null; })
-      .attr('fill', 'rgba(0, 0, 0, 0.07)');
+      .attr('fill', 'rgba(100, 100, 100, 0.13)');
 }
 
 function redrawLink(link) {
